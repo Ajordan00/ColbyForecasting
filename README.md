@@ -62,10 +62,10 @@ forecasts, to understanding the complexities of forecasts’ impacts.
 - Discussion: What are we forecasting?
 
 - [Discussion
-  notes](https://docs.google.com/document/d/1YNo4EiQP9spu2X-jKcjaEqujNmfNFCV2vHqsuTsw1iI/edit?tab=t.0)
+  notes](https://docs.google.com/document/d/12EHB44If98Kb811HNHM8uQfErNeU8lqITtzsWVBcFqo/edit?tab=t.0)
 
 - [Superforecasting
-  challenge](https://docs.google.com/forms/d/1BNwFlr1gvsdxa4CP8sKJJXYmClo5jaqkj9eQnRPvKIs/viewform?edit_requested=true#settings)
+  challenge](https://docs.google.com/forms/d/e/1FAIpQLSeuuLMzVbg8Hsdn9slGt5qFx1P78tCbKzsEuuHdnt3auQIC2Q/viewform?usp=sharing&ouid=104137235354632912497)
 
 - Lecture: Forecasting Introduction
 
@@ -90,9 +90,6 @@ forecasts, to understanding the complexities of forecasts’ impacts.
 - Reading assignment for next time: [Mollomo
   1998](https://github.com/BigelowLab/ColbyForecasting/blob/main/reading/Mollomo1998.pdf)
 
-- Lecture: Predicting the distributions of right whales and white sharks
-  in the Gulf of Maine (Camille and Kyle guest lectures)
-
 - Discussion: Where does our data come from?
 
 - R Tutorial: [Background
@@ -102,6 +99,8 @@ forecasts, to understanding the complexities of forecasts’ impacts.
   2020](https://github.com/BigelowLab/ColbyForecasting/blob/main/reading/Brickman.elementa.2020.20.00055.pdf)
 
 ### 3. Monday Jan 12
+
+- Panel: Early career scientists in Ocean Forecasting
 
 - Lecture: Forecasting Methodologies
 
