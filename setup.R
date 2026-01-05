@@ -48,8 +48,14 @@ for (f in list.files("functions", pattern = glob2rx("*.R"), full.names = TRUE)) 
 
 # Finally set path to the data hopefully as a sibling to the project directory
 # The data directory has top level subdirectories ("buoys", "coast", "brickman")
-# that contain data used by all.  It also may have one or more yearly directories
-# for "personal data directories" ala "2024", "2025"
+# that contain data used by all, and to which you wil add your own data.
 ROOT_DATA_PATH = "~/ColbyForecasting_data"
-if (!dir.exists(ROOT_DATA_PATH)) ok = dir.create(ROOT_DATA_PATH)
+if (!dir.exists(ROOT_DATA_PATH)) {
+  ok = dir.create(ROOT_DATA_PATH, recursive = TRUE)
+  ok = unzip("/opt/ColbyForecasting_data.zip",
+             exdir = ROOT_DATA_PATH,
+             junkpaths = FALSE)
+  macosx_junk = file.path(ROOT_DATA_PATH, "__MACOSX") 
+  if (dir.exists(macosx_junk)) unlink(macosx_junk, recursive = TRUE, force = TRUE)
+}
 
