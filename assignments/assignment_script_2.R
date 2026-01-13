@@ -1,3 +1,5 @@
+# Copy of the "read_bseervations" function
+
 
 read_observations = function(scientificname = "Placopecten magellanicus",
                              minimum_year = 1970, 
