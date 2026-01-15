@@ -37,7 +37,7 @@ OK - load the data we need.
 
 ```{r load_obs_mask}
 coast = read_coastline()
-obs = read_observations(scientificname = "Mola mola")
+obs = read_observations()
 db = brickman_database() |>
   filter(scenario == "STATIC", var == "mask")
 mask = read_brickman(db)
@@ -175,13 +175,13 @@ These would be the data locations we feed into the model.  So is that reasonable
 Let's save this.
 
 ```{r save_model_input}
-write_model_input(obsbkg, scientificname = "Mola mola")
+write_model_input(obsbkg, scientificname = "Placopecten magellanicus")
 ```
 
 Note that there is a function for reading model input files, too. 
 
 ```{r read_model_input}
-x = read_model_input(scientificname = "Mola mola")
+x = read_model_input(scientificname = "Placopecten magellanicus")
 ```
 
 

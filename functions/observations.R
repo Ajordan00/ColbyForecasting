@@ -43,7 +43,3 @@ read_observations = function(scientificname = "Placopecten magellanicus",
   
   return(x)
 }
-
-source("setup.R")
-obs = read_observations()
-dim(obs)
