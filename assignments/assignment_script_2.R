@@ -1,47 +1,47 @@
-# Copy of the "read_bseervations" function
+model = read_model_input(scientificname = "Placopecten magellanicus")
+
+brickman_all <- read_brickman(
+  db_mon,
+  add = "depth"
+)
 
 
-read_observations = function(scientificname = "Placopecten magellanicus",
-                             minimum_year = 1970, 
-                             ...){
-  
-  #' Read raw OBIS data and then filter it
-  #' 
-  #' @param scientificname chr, the name of the species to read
-  #' @param minimum_year num, the earliest year of observation to accept or 
-  #'   set to NULL to skip
-  #' @param ... other arguments passed to `read_obis()`
-  #' @return a filtered table of observations
-  
-  # Happy coding!
-  
-  # read in the raw data
-  x = read_obis(scientificname, ...) |>
-    dplyr::mutate(month = factor(month, levels = month.abb))
-  
-  # if the user provided a non-NULL filter by year
-  if (!is.null(minimum_year)){
-    x = x |>
-      filter(year >= minimum_year)
-  }
-  
-  # eventDate must exist
-  x = x |>
-    dplyr::filter(!is.na(eventDate))
-  
-  # individualCount must exist
-  x = x |>
-    dplyr::filter(!is.na(individualCount))
-  
-  db = brickman_database() |>
-    dplyr::filter(scenario == "STATIC", var == "mask")
-  
-  mask = read_brickman(db)
-  
-  hitOrMiss = extract_brickman(mask, x)
-  
-  x = x |>
-    dplyr::filter(!is.na(hitOrMiss$value))
-  
-  return(x)
-}
+monthly_points <-
+  model |>
+  group_by(month, class) |>
+  slice_sample(n = 1) |>
+  ungroup() |>
+  group_by(month) |>
+  mutate(point = ifelse(class == "presence", "p1", "p2")) |>
+  ungroup()
+
+brickman_values <-
+  extract_brickman(
+    x = brickman_all,
+    y = monthly_points,
+    form = "wide"
+  )
+
+final_table <-
+  brickman_values |>
+  select(
+    month,
+    class,
+    point,
+    depth,
+    SSS,
+    SST
+  ) |>
+  arrange(month, class)
+
+print(final_table, n = 24)
+
+final_table |>
+  ggplot() +
+  geom_sf(aes(color = class), size = 2) +
+  facet_wrap(~ month) +
+  theme_minimal() +
+  labs(
+    title = "Random monthly presence/background points",
+    color = "Point type"
+  )
