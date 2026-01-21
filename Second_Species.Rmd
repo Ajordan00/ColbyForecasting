@@ -1,0 +1,105 @@
+---
+title: "My Second Species"
+output: github_document
+---
+The first step of any good script is to setup the environment.
+
+```{r setup}
+source("setup.R")
+```
+
+Before we think about a second species we must read in the Brickman data. 
+
+```{r read_brickman}
+db = brickman_database() |>
+  dplyr::filter(scenario == "PRESENT", interval == "mon")
+present = read_brickman(add = c("depth"))
+```
+
+Looking at species that interact with the North Atlantic Scallop (Placopecten magellanicus), the most apparent is the Northern Sea Star (Asterias rubens), the most common predator of the scallops. Lets get the data from OBIS. 
+
+Note: I chose to remove the minimum_year restriction simply to get enough data to populate each month (keep this in mind when interpreting results)
+
+```{r read_observations}
+fetch_obis("Asterias rubens")
+obs = read_observations(scientificname = "Asterias rubens", minimum_year = 0)
+table(obs$month)
+```
+
+Now that we have filtered species data for the Starfish, lets weigh the observations before populating background points.
+
+```{r weigh_observations}
+
+db = brickman_database() |>
+  filter(scenario == "STATIC", var == "mask")
+mask = read_brickman(db)
+
+bias_map = rasterize_point_density(obs, mask)
+
+```
+
+Next lets actually populate those background points
+
+```{r background_points}
+all_counts = count(st_drop_geometry(obs), month)
+nback_avg = mean(all_counts$n) |>
+  round()
+nback_avg
+
+obsbkg = sapply(month.abb,
+    function(mon){ 
+      sample_background(obs |> filter(month == mon), # <- just this month
+                       bias_map,
+                       method = "bias",  # <-- it needs to know it's a bias map
+                       return_pres = TRUE, # <-- give me the obs back, too
+                       n = nback_avg) |>   # <-- how many points
+        mutate(month = mon, .before = 1)
+    }, simplify = FALSE) |>
+  bind_rows() |>
+  mutate(month = factor(month, levels = month.abb))
+obsbkg 
+```
+
+Lets take a look at our presence vs background points, and then save the model_input. 
+
+```{r check_and_save_model_input}
+coast = read_coastline()
+
+ggplot() +
+  geom_sf(data = obsbkg, 
+          mapping = aes(col = class),
+          alpha =  0.4, shape = "circle small", size = 1) +
+  geom_sf(data = coast, col = "orange")  + 
+  labs(x = "Longitude", y = "Latitude", title = "All") +   
+  theme_bw() +  # <- make a simple white background
+  scale_fill_okabe_ito() +  # <-- colorblind friendly for N Record
+  facet_wrap(~month)
+
+model_input = write_model_input(obsbkg, scientificname = "Asterias rubens")
+```
+
+Now lets get covariates sorted, and compare them between presence and background points
+
+```{r covariates}
+variables = extract_brickman(present, model_input, form = "wide")
+variables = variables |>
+  select(-.id) 
+plot_pres_vs_bg(variables |> select(-month), "class")
+```
+
+From the plots we can tell that mixed layer depth, sea surface temperature, and bottom temperature are the most telling variables. Now lets save this config!
+
+```{r config}
+cfg = list(
+  version = "v1",
+  scientificname = "Asterias rubens",
+  background = "average of observations per month",
+  keep_vars =  keep)
+
+ok = make_path(data_path("models")) # make a directory for models
+write_configuration(cfg)  
+
+write_model_input(variables, scientificname = "Asterias rubens", version = "v1")
+```
+
+Success!
